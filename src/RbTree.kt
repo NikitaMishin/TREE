@@ -29,7 +29,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         link@ while (tmp != null) {
             when {
                 tmp.key == key -> {
-                    System.out.print("Already have value by key = $key");return
+                    println("Already have value by key = $key");return
                 }
                 key > tmp.key -> if (tmp.rightChild == null) {
                     flag = true; break@link
@@ -47,6 +47,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         } else tmp!!.rightChild = newNode///////
 
         fixUpInsertNode(newNode)
+        root!!.color = false
     }
 
     private  fun fixUpInsertNode(x:Node<T,P>){
@@ -66,12 +67,12 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
                 else if(node.parent?.rightChild == node){
                     node = node.parent!!
                     leftRotate(node)
-
                 }
                 else {
                     node?.parent?.color = false
                     node?.parent?.parent?.color = true
-                    rightRotate((node!!.parent!!.parent!!))//??
+                    //rightRotate((node!!.parent!!.parent!!))//??
+                    rightRotate((node.parent!!.parent!!))//??
                   }
             }
             else{
@@ -89,11 +90,11 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
                 else {
                     node.parent?.color = false
                     node.parent?.parent?.color = true
-                    leftRotate((node.parent!!.parent!!))////??
+                    leftRotate(node.parent!!.parent!!)////??
                 }
             }
         }
-        this.root?.color == false
+        root!!.color == false
     }
 
 
@@ -103,7 +104,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         var copyNode = node.rightChild
         node.rightChild  = copyNode?.leftChild
 
-        if (copyNode!!.leftChild!=null) copyNode!!.leftChild = node
+        if (copyNode!!.leftChild!=null) copyNode.leftChild = node
         copyNode.parent = node.parent
 
         if (node.parent == null) this.root  = copyNode
@@ -113,7 +114,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
             else-> throw UnsupportedOperationException("Bad in rotate left")
         }
         ///about copyNode?.leftchild.parent??
-        copyNode?.leftChild = node
+        copyNode.leftChild = node
         node.parent  = copyNode
     }
     private fun rightRotate(node :Node<T,P>){
@@ -122,7 +123,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         var copyNode = node.leftChild
         node.leftChild  = copyNode?.rightChild
 
-        if (copyNode!!.rightChild!=null) copyNode!!.rightChild = node
+        if (copyNode!!.rightChild!=null) copyNode.rightChild = node
         copyNode.parent = node.parent//>>>??
 
         if (node.parent == null) this.root  = copyNode
@@ -131,12 +132,21 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
             node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
             else-> throw UnsupportedOperationException("Bad in rotate left")
         }
-        copyNode?.rightChild = node
+        copyNode.rightChild = node
         node.parent  = copyNode
     }
 
 
-
+    fun printTree() = printTree(this.root, 0)
+    public   fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
+        if(node != null) {
+            printTree(node.rightChild, level +1)
+            for (i in 0..level+1 ) System.out.print("   ")
+            if (node.color ==true)System.out.println(30.toChar() + node.value.toString())
+            else {System.out.println(node.value)}
+            printTree(node.leftChild,level + 1)
+        }
+    }
 
 
 
@@ -147,7 +157,13 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
 
     }
 
+    override fun getValueByMinKey(key: T): P? {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun getValueByMaxKey(key: T): P? {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
 
 }
