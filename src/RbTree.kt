@@ -47,7 +47,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         } else tmp!!.rightChild = newNode///////
 
         fixUpInsertNode(newNode)
-        root!!.color = false
+       // root!!.color = false
     }
 
     private  fun fixUpInsertNode(x:Node<T,P>){
@@ -69,8 +69,8 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
                     leftRotate(node)
                 }
                 else {
-                    node?.parent?.color = false
-                    node?.parent?.parent?.color = true
+                    node!!.parent!!.color = false
+                    node!!.parent!!.parent?.color = true
                     //rightRotate((node!!.parent!!.parent!!))//??
                     rightRotate((node.parent!!.parent!!))//??
                   }
@@ -94,7 +94,7 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
                 }
             }
         }
-        root!!.color == false
+        root!!.color = false
     }
 
 
