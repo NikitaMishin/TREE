@@ -1,3 +1,4 @@
+import java.util.*
 
 /**
  * Created by nikita on 05.03.17.
@@ -16,7 +17,7 @@ open class MyQueue <P>() {
     class  Item<P>( val value:P, var next :Item<P>? = null)
 
     fun add(element: P): Boolean {
-        val item : Item<P> = Item(value = element)
+        var item : Item<P> = Item(value = element)
         if (tail==null){
             head = item
             tail = head
@@ -37,4 +38,5 @@ open class MyQueue <P>() {
     }
 
     fun isEmpty(): Boolean = head == null
+    fun isNotEmpty(): Boolean = head != null
 }

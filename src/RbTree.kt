@@ -1,6 +1,4 @@
-import sun.misc.Queue
-import java.awt.Color
-import java.util.*
+
 
 /**
  * Created by nikita on 27.02.17.
@@ -9,7 +7,6 @@ import java.util.*
 /**
  *
  */
-/// true --- color red
 open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P>, Iterable<Node<T,P>> {
     override fun iterator(): Iterator<Node<T, P>> {
         if (root!=null) return  RbIterator(root!!)
@@ -57,8 +54,9 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         } else tmp!!.rightChild = newNode///////
 
         fixUpInsertNode(newNode)
-       // root!!.color = false
+        root!!.color = false
     }
+
     private  fun fixUpInsertNode(x:Node<T,P>){
         var node = x
         var tmp: Node<T,P>? = null
@@ -105,6 +103,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         }
         root!!.color = false
     }
+
     private fun leftRotate(node: Node<T, P>){
         //assert
         if (node.rightChild==null) throw UnsupportedOperationException("Bad in fun left rotate right child ==null!")
@@ -124,6 +123,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         copyNode.leftChild = node
         node.parent  = copyNode
     }
+
     private fun rightRotate(node :Node<T,P>){
         //assert
         if (node.leftChild==null) throw UnsupportedOperationException("Bad in fun left rotate left child ==null!")
@@ -145,11 +145,11 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
 
 
     fun printTree() = printTree(this.root, 0)
-    public fun printTree(node:Node <T,P>?, level:Int = 0){//need to override in black tree
+    public fun printTree(node:Node <T,P>?, level:Int = 0){
         if(node != null) {
             printTree(node.rightChild, level +1)
             for (i in 1..level ) print("  |")
-            if (node.color ==true)println(27.toChar() + "[31m"+ node.value +27.toChar() + "[0m")
+            if (node.color ==true) println(27.toChar() + "[31m"+ node.value +27.toChar() + "[0m")
             else {println(node.value)}
             printTree(node.leftChild,level + 1)
         }
@@ -192,10 +192,37 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
     }
 
     override fun getValueByMinKey(key: T): P? {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (root == null){
+            println("Tree is empty!")
+            return null
+        }
+        var tmp: Node<T,P>? = root
+        while(tmp?.leftChild != null) tmp = tmp?.leftChild
+        return  tmp?.value
     }
     override fun getValueByMaxKey(key: T): P? {
-        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (root == null){
+            println("Tree is empty!")
+            return null
+        }
+        var tmp: Node<T,P>? = root
+        while(tmp?.rightChild != null) tmp = tmp?.rightChild
+        return  tmp?.value
     }
+
+    private fun RbRemoveFixUp(x:Node<T,P>?){
+        while(x != root &&(x == null || x.color == false )){
+            if (x == x!!.parent!!.leftChild){
+
+            }
+            else{
+
+
+            }
+
+
+        }
+    }
+
 
     }
