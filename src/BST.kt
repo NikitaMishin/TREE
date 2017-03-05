@@ -112,9 +112,9 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
 
             copyNode.parent = removedNode.parent
             copyNode.leftChild = removedNode.leftChild
-            removedNode.leftChild!!.parent = copyNode
+            if (removedNode.leftChild!=null )removedNode.leftChild!!.parent = copyNode
             copyNode.rightChild = removedNode.rightChild
-            removedNode.rightChild!!.parent = copyNode
+            if(removedNode.rightChild != null)removedNode.rightChild!!.parent = copyNode //weak point
 
             when{
                 removedNode.parent == null-> this.root = copyNode
@@ -165,8 +165,8 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
     public  open fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
         if(node != null) {
             printTree(node.rightChild, level +1)
-            for (i in 0..level+1 ) System.out.print("     ")
-            System.out.println(node.value)
+            for (i in 1..level ) print("  |")
+            println(node.value.toString())
             printTree(node.leftChild,level + 1)
         }
     }
