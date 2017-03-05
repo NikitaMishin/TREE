@@ -1,11 +1,21 @@
+import sun.misc.Queue
 import java.awt.Color
+import java.util.*
 
 /**
  * Created by nikita on 27.02.17.
  */
 
+/**
+ *
+ */
 /// true --- color red
-class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P> {
+open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P>, Iterable<Node<T,P>> {
+    override fun iterator(): Iterator<Node<T, P>> {
+        if (root!=null) return  RbIterator(root!!)
+        else throw UnsupportedOperationException("root ==null") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun searchByKey(key: T): P? {
         var tmp :Node<T,P>?   = root
         while(tmp!=null) {
@@ -49,7 +59,6 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         fixUpInsertNode(newNode)
        // root!!.color = false
     }
-
     private  fun fixUpInsertNode(x:Node<T,P>){
         var node = x
         var tmp: Node<T,P>? = null
@@ -96,8 +105,6 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
         }
         root!!.color = false
     }
-
-
     private fun leftRotate(node: Node<T, P>){
         //assert
         if (node.rightChild==null) throw UnsupportedOperationException("Bad in fun left rotate right child ==null!")
@@ -138,32 +145,57 @@ class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P
 
 
     fun printTree() = printTree(this.root, 0)
-    public   fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
+    public fun printTree(node:Node <T,P>?, level:Int = 0){//need to override in black tree
         if(node != null) {
             printTree(node.rightChild, level +1)
-            for (i in 0..level+1 ) System.out.print("   ")
-            if (node.color ==true)System.out.println(30.toChar() + node.value.toString())
-            else {System.out.println(node.value)}
+            for (i in 1..level ) print("  |")
+            if (node.color ==true)println(27.toChar() + "[31m"+ node.value +27.toChar() + "[0m")
+            else {println(node.value)}
             printTree(node.leftChild,level + 1)
         }
     }
+    fun printTreeByBFS() = printTreeByBFS(root)
+    open fun printTreeByBFS(node: Node<T, P>?){
+        if (node == null) throw UnsupportedOperationException("Node is null!!")
+        var queue: MyQueue<Node<T,P>> = MyQueue()
+        queue.add(node)
+        var tmp:Node<T,P>
+        while (queue.isEmpty() != true){
+            tmp = queue.remove()
+            print(" " + tmp.value)
+            if (tmp.leftChild!=null) queue.add(tmp.leftChild!!)
+            if (tmp.rightChild!=null) queue.add(tmp.rightChild!!)
+        }
 
+    }
 
-
-
-    override fun removeNodebyKey(key:T) {
-
-
+    override fun removeNodeByKey(key:T) {
+        var tmp :Node<T,P>?   = null
+        var removedNode:Node<T,P>? = root
+        link@ while(removedNode!=null) {
+            when {
+                removedNode.key == key -> {
+                    break@link
+                }
+                key > removedNode.key -> removedNode = removedNode.rightChild
+                key < removedNode.key -> removedNode = removedNode.leftChild
+            }
+        }
+        if (removedNode==null ){
+            println("Can't remove Node by key =  $key. Don't exist!!")
+            return
+        }
+        //
+        tmp = removedNode
+        var colorOftmp = removedNode.color
 
     }
 
     override fun getValueByMinKey(key: T): P? {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
     override fun getValueByMaxKey(key: T): P? {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
-}
+    }

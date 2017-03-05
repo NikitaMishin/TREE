@@ -2,7 +2,17 @@
  * Created by nikita on 27.02.17.
  */
 
+
+/**
+ * BST for key Type T and value Type P
+ *
+ * fun "searchBykey" search node with input key and return value of this node else return null
+ * fun "insertNode" insert input value by  input key. if key isn't unique then fun return message "Already have value by key = $key"
+ * fun "removeNodeByKey" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
+ */
+
 open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { //need to test //tomorrow
+
     override fun searchByKey(key: T): P? {
         var tmp :Node<T,P>?   = root
         while(tmp!=null) {
@@ -14,7 +24,8 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
         }
         System.out.print("Can't find value by key =  $key.")
         return null
-    }// override in fture vlass
+    }
+
     override fun insertNode(key:T,value: P) {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
@@ -25,7 +36,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
         link@ while (tmp != null) {
             when {
                 tmp.key == key -> {
-                    System.out.print("Already have value by key = $key");return
+                    System.out.println("Already have value by key = $key");return
                 }
                 key > tmp.key -> if (tmp.rightChild == null) {
                     flag = true; break@link
@@ -42,6 +53,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
             tmp!!.leftChild = newNode ///////
         } else tmp!!.rightChild = newNode
     }
+
     override fun getValueByMaxKey(key: T): P? {
         if (key == null) throw  UnsupportedOperationException("Wrong input")
         if (root == null){
@@ -80,17 +92,18 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
         return null
 
     }
-    override fun removeNodebyKey(key: T) {
+
+    override fun removeNodeByKey(key: T) {
         var removedNode:Node<T,P>? = getNodeBySearchByKey (key)
 
         if (removedNode == null) {
-            System.out.print("Nothing to remove by key = $key!")
+            System.out.println("Nothing to remove by key = $key!")
             return
         }
         if (removedNode.leftChild != null && removedNode.rightChild != null){
-            var copyNode = getNodeByMinKey(removedNode!!.rightChild!!)
+            var copyNode = getNodeByMinKey(removedNode.rightChild!!)
 
-            if (copyNode.rightChild!=null) copyNode!!.rightChild!!.parent =  copyNode.parent
+            if (copyNode.rightChild!=null) copyNode.rightChild!!.parent =  copyNode.parent
             when{
                 copyNode.parent!!.rightChild == copyNode-> copyNode.parent!!.rightChild =copyNode.rightChild
                 copyNode.parent!!.leftChild == copyNode->copyNode.parent!!.leftChild = copyNode.rightChild
@@ -112,7 +125,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
         }
         else {
             if (removedNode.leftChild != null) {
-                removedNode?.leftChild?.parent = removedNode.parent
+                removedNode.leftChild?.parent = removedNode.parent
                 when {//how exactly work when
                     removedNode.parent == null -> {
                         root = removedNode.leftChild
@@ -124,7 +137,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
                 }
             }
             if (removedNode.rightChild!= null) {
-                removedNode?.rightChild?.parent = removedNode.parent
+                removedNode.rightChild?.parent = removedNode.parent
                 when{
                     removedNode.parent == null -> {
                         root = removedNode.rightChild
@@ -144,6 +157,17 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
                         removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = null
                 }
             }
+        }
+    }
+
+
+    fun printTree() = printTree(this.root, 0)
+    public  open fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
+        if(node != null) {
+            printTree(node.rightChild, level +1)
+            for (i in 0..level+1 ) System.out.print("     ")
+            System.out.println(node.value)
+            printTree(node.leftChild,level + 1)
         }
     }
 }
