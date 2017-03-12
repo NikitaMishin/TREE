@@ -11,8 +11,14 @@
  * fun "removeNodeByKey" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
  */
 
-open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { //need to test //tomorrow
-
+open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,P> { //need to test //tomorrow
+    override fun iterator(): Iterator<Node<T, P>> {
+        if (root != null) {
+            return TreeIterator(root!!)
+        } else {
+            throw UnsupportedOperationException("root ==null")
+        } //To change body of created functions use File | Settings | File Templates.
+    }
     override fun searchByKey(key: T): P? {
         var tmp :Node<T,P>?   = root
         while(tmp!=null) {
@@ -22,7 +28,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
                 key < tmp.key -> tmp = tmp.leftChild
             }
         }
-        System.out.print("Can't find value by key =  $key.")
+        print("Can't find value by key =  $key.")
         return null
     }
 
@@ -61,7 +67,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
             return null
         }
         var tmp: Node<T,P>? = root
-        while(tmp?.rightChild != null) tmp = tmp?.rightChild
+        while(tmp?.rightChild != null) tmp = tmp.rightChild
         return  tmp?.value
     }
     override fun getValueByMinKey(key: T): P? {
@@ -71,7 +77,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
             return null
         }
         var tmp: Node<T,P>? = root
-        while(tmp?.leftChild != null) tmp = tmp?.leftChild
+        while(tmp?.leftChild != null) tmp = tmp.leftChild
         return  tmp?.value
     }///
     private  fun getNodeByMinKey(root:Node<T,P>):Node<T,P>{//check on null??
@@ -161,7 +167,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
     }
 
 
-    fun printTree() = printTree(this.root, 0)
+  /*  fun printTree() = printTree(this.root, 0)
     public  open fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
         if(node != null) {
             printTree(node.rightChild, level +1)
@@ -170,4 +176,5 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?) :Tree<T,P> { 
             printTree(node.leftChild,level + 1)
         }
     }
+    */
 }

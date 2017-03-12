@@ -9,7 +9,7 @@
  *
  */
 
-interface  Tree<T:Comparable<T>,P>{
+interface  Tree<T:Comparable<T>,P>: Iterable<Node<T,P>>{
     fun insertNode(key:T,value:P)
     fun searchByKey(key:T):P?//
     fun removeNodeByKey(key:T)

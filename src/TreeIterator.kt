@@ -3,7 +3,8 @@ import java.util.*
 /**
  * Created by nikita on 03.03.17.
  */
-open class RbIterator <T:Comparable<T>,P> (var node: Node<T,P>):Iterator<Node<T,P>> {
+open class TreeIterator <T:Comparable<T>,P> (var node: Node<T,P>):Iterator<Node<T,P>> {
+
     //var queue:MyQueue<Node<T,P>>? = MyQueue()
         var stack: Stack<Node<T,P>>? = Stack()
         var queue:MyQueue<Node<T,P>> = MyQueue()
@@ -24,6 +25,6 @@ open class RbIterator <T:Comparable<T>,P> (var node: Node<T,P>):Iterator<Node<T,
         }
     }
   //  //override fun hasNext(): Boolean = queue!!.isNotEmpty()
-    override  fun hasNext(): Boolean = queue.isNotEmpty()
-    override fun next(): Node<T,P> =queue.remove()
+    override fun hasNext(): Boolean = queue.isNotEmpty()
+    override fun next(): Node<T,P> = queue.remove()
 }

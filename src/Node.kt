@@ -12,7 +12,7 @@
  * height is undefined
 */
 
-open class  Node<T :Comparable<T>, P>(var key: T, var value:P,var color:Boolean = true,var height:Int? = null )  {//value
+open class  Node<T :Comparable<T>, P>(var key: T, var value:P,var color:Color = Color.BLACK,var height:Int? = null)  {//value
     var leftChild:Node<T,P>? = null
     var rightChild:Node<T,P>? = null
     var parent:Node<T,P>? = null
