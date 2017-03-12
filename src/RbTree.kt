@@ -46,13 +46,13 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                     flag = true; break@link
                 } else tmp = tmp.rightChild
                 key < tmp.key -> if (tmp.leftChild == null) {
+                    flag = false
                     break@link
                 } else tmp = tmp.leftChild
             }
         }
         var newNode: Node<T, P> = Node(key = key, value = value, color = Color.RED)
         newNode.parent = tmp
-        //newNode.setParent(tmp)
         if (flag == false) {
             tmp!!.leftChild = newNode ///////
         } else tmp!!.rightChild = newNode///////
@@ -73,20 +73,23 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             if (node.parent?.parent?.leftChild == node.parent) {//?
                 tmp = node.parent?.parent?.rightChild//null?
                 if (tmp != null && tmp.color == Color.RED) {
-                    //tmp== null ->black
                     node.parent?.color = Color.BLACK //black
                     tmp.color = Color.BLACK
                     node.parent?.parent?.color = Color.RED
                     node = node.parent!!.parent!!
-                } else if (node.parent?.rightChild == node) {
-                    node = node.parent!!
-                    leftRotate(node)
-                } else {
-                    node!!.parent!!.color = Color.BLACK
-                    node.parent!!.parent?.color = Color.RED
-                    //rightRotate((node!!.parent!!.parent!!))//??
-                    rightRotate((node.parent!!.parent!!))//??
                 }
+                else  {
+                    if (node.parent?.rightChild == node)
+                    {
+                        node = node.parent!!
+                        leftRotate(node)
+                    }
+                        node!!.parent!!.color = Color.BLACK
+                        node.parent!!.parent?.color = Color.RED
+                        rightRotate((node.parent!!.parent!!))//this shiy and 101
+
+                }
+
             } else {
                 tmp = node?.parent?.parent?.leftChild//null?
                 if (tmp != null && tmp.color == Color.RED) {
@@ -94,13 +97,16 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                     tmp.color = Color.BLACK
                     node.parent?.parent?.color = Color.RED
                     node = node.parent!!.parent!!
-                } else if (node.parent?.leftChild == node) {
-                    node = node.parent!!
-                    rightRotate(node)
                 } else {
-                    node.parent?.color = Color.BLACK
-                    node.parent?.parent?.color = Color.RED
-                    leftRotate(node.parent!!.parent!!)////??
+                    if (node.parent?.leftChild == node)
+                    {
+                        node = node.parent!!
+                        rightRotate(node)
+                    }
+                        node.parent?.color = Color.BLACK
+                        node.parent?.parent?.color = Color.RED
+                        leftRotate(node.parent!!.parent!!)////??
+
                 }
             }
         }
@@ -108,39 +114,48 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
     }
 
     private fun leftRotate(node: Node<T, P>) {
-        //assert
         if (node.rightChild == null) throw UnsupportedOperationException("Bad in fun left rotate right child ==null!")
         var copyNode = node.rightChild
         node.rightChild = copyNode?.leftChild
 
-        if (copyNode!!.leftChild != null) copyNode.leftChild = node
+        if (copyNode!!.leftChild != null) copyNode.leftChild!!.parent = node
         copyNode.parent = node.parent
 
-        if (node.parent == null) this.root = copyNode
-        else when {
-            node.parent?.leftChild == node -> node.parent?.leftChild = copyNode
-            node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
-            else -> throw UnsupportedOperationException("Bad in rotate left")
+        if (node.parent == null)
+        {
+            this.root = copyNode
         }
-        ///about copyNode?.leftchild.parent??
+        else {
+            when {
+                node.parent?.leftChild == node -> node.parent?.leftChild = copyNode
+                node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
+                else -> throw UnsupportedOperationException("Bad in rotate left")
+            }
+        }
         copyNode.leftChild = node
         node.parent = copyNode
     }
 
     private fun rightRotate(node: Node<T, P>) {
-        //assert
         if (node.leftChild == null) throw UnsupportedOperationException("Bad in fun left rotate left child ==null!")
         var copyNode = node.leftChild
         node.leftChild = copyNode?.rightChild
 
-        if (copyNode!!.rightChild != null) copyNode.rightChild = node
+        if (copyNode!!.rightChild != null) copyNode.rightChild!!.parent = node
         copyNode.parent = node.parent//>>>??
 
         if (node.parent == null) this.root = copyNode
         else when {
             node.parent?.leftChild == node -> node.parent?.leftChild = copyNode
             node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
-            else -> throw UnsupportedOperationException("Bad in rotate left")
+            else -> {
+                println(copyNode.value.toString()+"its copynode")
+                print (node.value)
+                println(node.color)
+                var printer= TreePrinter()
+                printer.printTreeAsTree(this)
+                throw UnsupportedOperationException("Bad in rotate right")
+            }
         }
         copyNode.rightChild = node
         node.parent = copyNode
