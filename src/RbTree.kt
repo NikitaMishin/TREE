@@ -168,7 +168,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         u.parent = v.parent
     }
 
-  /*  fun printTree() = printTree(this.root, 0)
+    fun printTree() = printTree(this.root, 0)
     public fun printTree(node: Node <T, P>?, level: Int = 0) {
         if (node != null) {
             printTree(node.rightChild, level + 1)
@@ -195,7 +195,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         }
 
     }
-*/
+
 
     override fun removeNodeByKey(key: T) {
         var tmp: Node<T, P>? = null

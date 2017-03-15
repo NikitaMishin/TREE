@@ -20,6 +20,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         } //To change body of created functions use File | Settings | File Templates.
     }
     override fun searchByKey(key: T): P? {
+        //print("f")
         var tmp :Node<T,P>?   = root
         while(tmp!=null) {
             when{
