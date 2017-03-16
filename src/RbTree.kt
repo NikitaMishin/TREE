@@ -9,13 +9,29 @@
  */
 open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P> {
 
+    public fun isItRbTree():Boolean {
+        if (root==null) return true
+        return blackHeight(root!!)>=0
+    }
+    private fun  blackHeight(node: Node<T, P>) : Int//check
+    {
+        var leftHeight =0
+        var rightHeight = 0
+        if (node.leftChild != null) leftHeight = blackHeight(node.leftChild!!)
+        if (node.rightChild != null) rightHeight = blackHeight(node.rightChild!!)
+        if (leftHeight!=rightHeight) {
+            return -100
+        }
+        if (isBlack(node)) leftHeight++
+        return leftHeight
+    }
     override fun iterator(): Iterator<Node<T, P>> {
         if (root != null) {
             return TreeIterator(root!!)
         } else {
-            throw UnsupportedOperationException("root ==null")
+            throw UnsupportedOperationException("root == null")
         } //To change body of created functions use File | Settings | File Templates.
-    }
+    }//ok
 
     override fun searchByKey(key: T): P? {
         var tmp: Node<T, P>? = root
@@ -26,22 +42,19 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                 key < tmp.key -> tmp = tmp.leftChild
             }
         }
-        print("Can't find value by key =  $key.")
         return null
-    }
+    }//ok
 
-    override fun insertNode(key: T, value: P) {
+    override fun insertNode(key: T, value: P):Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
             root = Node(key, value, color = Color.BLACK)//
-            return
+            return true
         }
         link@ while (tmp != null) {
             when {
-                tmp.key == key -> {
-                    println("Already have value by key = $key");return
-                }
+                tmp.key == key -> return false
                 key > tmp.key -> if (tmp.rightChild == null) {
                     flag = true; break@link
                 } else tmp = tmp.rightChild
@@ -56,15 +69,15 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         if (flag == false) {
             tmp!!.leftChild = newNode ///////
         } else tmp!!.rightChild = newNode///////
-
         fixUpInsertNode(newNode)
-    }
+        return true
+    }//ok
 
     private fun getNodeByMinKey(node: Node<T, P>): Node<T, P> {
         var tmp = node
         while (tmp.leftChild != null) tmp = tmp.leftChild!!
         return tmp
-    }
+    }//ok
 
     private fun fixUpInsertNode(x: Node<T, P>) {
         var node = x
@@ -161,28 +174,33 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         node.parent = copyNode
     }
 
-    private fun transplant(v: Node<T, P>, u: Node<T, P>) {
+   /* private fun transplant(v: Node<T, P>, u: Node<T, P>) {
         if (v.parent == null) root = u
         else if (v.parent!!.leftChild == v) v.parent!!.leftChild = u
         else v.parent!!.rightChild = u
         u.parent = v.parent
     }
-
-    fun printTree() = printTree(this.root, 0)
-    public fun printTree(node: Node <T, P>?, level: Int = 0) {
-        if (node != null) {
-            printTree(node.rightChild, level + 1)
-            for (i in 1..level) print("  |")
-            if (node.color == Color.RED) println(27.toChar() + "[31m" + node.value + 27.toChar() + "[0m")
-            else {
-                println(node.value)
-            }
-            printTree(node.leftChild, level + 1)
+    */
+    override fun getValueByMinKey(): P? {
+        if (root == null) {
+            return null
         }
+        var tmp: Node<T, P>? = root
+        while (tmp?.leftChild != null) tmp = tmp.leftChild
+        return tmp?.value
+    }//ok
+
+    override fun getValueByMaxKey(): P? {
+        if (root == null) {
+            return null
+        }
+        var tmp: Node<T, P>? = root
+        while (tmp?.rightChild != null) tmp = tmp.rightChild
+        return tmp?.value
     }
 
-    fun printTreeByBFS() = printTreeByBFS(root)
-    open fun printTreeByBFS(node: Node<T, P>?) {
+   // fun printTreeByBFS() = printTreeByBFS(root)
+   /* open fun printTreeByBFS(node: Node<T, P>?) {
         if (node == null) throw UnsupportedOperationException("Node is null!!")
         var queue: MyQueue<Node<T, P>> = MyQueue()
         queue.add(node)
@@ -195,6 +213,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         }
 
     }
+*/
 
 
     override fun removeNodeByKey(key: T) {
@@ -213,77 +232,82 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             println("Can't remove Node by key =  $key. Don't exist!!")
             return
         }
-        //
-        tmp = removedNode
-        var colorOftmp = removedNode.color
-
+        removeNode(removedNode)
     }
 
-    override fun getValueByMinKey(key: T): P? {
-        if (root == null) {
-            println("Tree is empty!")
-            return null
-        }
-        var tmp: Node<T, P>? = root
-        while (tmp?.leftChild != null) tmp = tmp.leftChild
-        return tmp?.value
-    }
-
-    override fun getValueByMaxKey(key: T): P? {
-        if (root == null) {
-            println("Tree is empty!")
-            return null
-        }
-        var tmp: Node<T, P>? = root
-        while (tmp?.rightChild != null) tmp = tmp.rightChild
-        return tmp?.value
-    }
-
-    private fun RbRemoveFixUp(x: Node<T, P>?) {
-        while (x != root && (x == null || x.color == Color.BLACK)) {
-            if (x == x!!.parent!!.leftChild) {
-
-            } else {
-
-
+    private fun removeNode(x: Node<T,P>) {
+        var remNode = x
+        var right = true
+        var nil:Node<T,P>
+        when {
+            x.leftChild != null && x.rightChild != null -> {
+                remNode = getNodeByMinKey(x.rightChild!!)
+                x.key = remNode.key
+                x.value = remNode.value
+                if (remNode.rightChild != null) remNode.rightChild!!.parent = remNode.parent
             }
-
-
-        }
-    }
-    /*
-    public fun removeNode(key: T): Boolean {
-        var removedNode: Node<T, P>? = root
-        link@ while (removedNode != null) {
-            when {
-                removedNode.key == key -> break@link
-                key > removedNode.key -> removedNode = removedNode.rightChild
-                key < removedNode.key -> removedNode = removedNode.leftChild
+            x.leftChild != null -> {
+                right = false
+                remNode.leftChild!!.parent = x.parent
             }
+            x.rightChild != null -> remNode.rightChild!!.parent = x.parent
         }
-        if (tmp == null) return false
+        if (remNode.parent == null)
+        {
+            if (right) root = remNode.rightChild
+            else root = remNode.leftChild
+        }
+        else when {
+            remNode.parent!!.leftChild == remNode -> if (right) remNode.parent!!.leftChild = remNode.rightChild else remNode.parent!!.leftChild = remNode.leftChild
+            remNode.parent!!.rightChild == remNode -> if (right) remNode.parent!!.rightChild = remNode.rightChild else remNode.parent!!.rightChild = remNode.leftChild
+            //else->
+        }
 
-        var tmp = tmp
-        var yColor = removedNode.color
-        var y = removedNode
-
-
-        if (removedNode.leftChild == null) {
-            tmp = removedNode.rightChild
-            transplant(removedNode, removedNode.rightChild!!)
-
-        } else if (removedNode.rightChild == null) {
-            tmp = removedNode.leftChild
-            transplant(removedNode, removedNode.leftChild!!)
-        } else {
-            y = getNodeByMinKey(removedNode)
-            yColor = y.color
-            if (y.parent == removedNode) {
-
-
+        if (isBlack(remNode))
+        {
+            when
+            {
+                remNode.leftChild != null -> println(remNode.leftChild!!.value.toString()+remNode.leftChild!!.color)
+                   // RbRemoveFixUp(remNode.leftChild)
+                remNode.rightChild != null -> println(remNode.rightChild!!.value.toString()+"df")
+                   //RbRemoveFixUp(remNode.rightChild)
+                else->
+                {
+                    nil = Node(key = remNode.key, value = remNode.value,color = Color.BLACK)
+                    nil.parent =remNode.parent
+                    println(nil.value.toString()+"vot")
+                    println(nil.parent!!.value.toString()+"svot")
+                    //RbRemoveFixUp(nil)
+                }
             }
         }
-        if (yColor == false) RbRemoveFixUp(tmp)
+        return
 
-    }*/
+    }
+
+//
+//    private fun RbRemoveFixUp(x: Node<T, P>?)
+//    {
+//        var node = x// think about if x is nil
+//        if (x!!.value == x.parent!!.value) //node is nil need to clear him //he will destroy when w eleavw del fun???
+//        while(x!=root && isBlack(x))
+//        {
+//            if (x==x!!.parent!!.leftChild)
+//            {
+//
+//            }
+//            else
+//        }
+//
+//
+//
+//    }
+
+
+    private fun isBlack(node:Node<T,P>?):Boolean
+    {
+        if (node == null) return true
+        if (node.color ==Color.BLACK) return true
+        return  false
+    }
 }

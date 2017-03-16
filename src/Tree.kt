@@ -10,9 +10,9 @@
  */
 
 interface  Tree<T:Comparable<T>,P>: Iterable<Node<T,P>>{
-    fun insertNode(key:T,value:P)
+    fun insertNode(key:T,value:P):Boolean
     fun searchByKey(key:T):P?//
     fun removeNodeByKey(key:T)
-    fun getValueByMinKey(key: T):P?
-    fun getValueByMaxKey(key: T):P?
+    fun getValueByMinKey():P?
+    fun getValueByMaxKey():P?
 }

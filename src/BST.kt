@@ -33,18 +33,16 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         return null
     }
 
-    override fun insertNode(key:T,value: P) {
+    override fun insertNode(key:T,value: P):Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
             root = Node(key = key, value = value)//
-            return
+            return true
         }
         link@ while (tmp != null) {
             when {
-                tmp.key == key -> {
-                    System.out.println("Already have value by key = $key");return
-                }
+                tmp.key == key -> return false
                 key > tmp.key -> if (tmp.rightChild == null) {
                     flag = true; break@link
                 } else tmp = tmp.rightChild
@@ -59,22 +57,19 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         if (flag == false) {
             tmp!!.leftChild = newNode ///////
         } else tmp!!.rightChild = newNode
+        return true
     }
 
-    override fun getValueByMaxKey(key: T): P? {
-        if (key == null) throw  UnsupportedOperationException("Wrong input")
+    override fun getValueByMaxKey(): P? {
         if (root == null){
-            System.out.print("Tree is empty!")
             return null
         }
         var tmp: Node<T,P>? = root
         while(tmp?.rightChild != null) tmp = tmp.rightChild
         return  tmp?.value
     }
-    override fun getValueByMinKey(key: T): P? {
-        if (key == null) throw  UnsupportedOperationException("Wrong input")
+    override fun getValueByMinKey(): P? {
         if (root == null){
-            System.out.print("Tree is empty!")
             return null
         }
         var tmp: Node<T,P>? = root
