@@ -25,13 +25,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         if (isBlack(node)) leftHeight++
         return leftHeight
     }
-    override fun iterator(): Iterator<Node<T, P>> {
-        if (root != null) {
-            return TreeIterator(root!!)
-        } else {
-            throw UnsupportedOperationException("root == null")
-        } //To change body of created functions use File | Settings | File Templates.
-    }//ok
+    override fun iterator(): Iterator<Node<T, P>> =TreeIterator(root)
 
     override fun searchByKey(key: T): P? {
         var tmp: Node<T, P>? = root
@@ -232,6 +226,10 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             println("Can't remove Node by key =  $key. Don't exist!!")
             return
         }
+        if (removedNode==root&& removedNode.leftChild==null&& removedNode.rightChild==null) {
+            root = null
+            return
+        }
         removeNode(removedNode)
     }
 
@@ -262,47 +260,100 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             remNode.parent!!.rightChild == remNode -> if (right) remNode.parent!!.rightChild = remNode.rightChild else remNode.parent!!.rightChild = remNode.leftChild
             //else->
         }
-
         if (isBlack(remNode))
         {
             when
             {
-                remNode.leftChild != null -> println(remNode.leftChild!!.value.toString()+remNode.leftChild!!.color)
-                   // RbRemoveFixUp(remNode.leftChild)
-                remNode.rightChild != null -> println(remNode.rightChild!!.value.toString()+"df")
-                   //RbRemoveFixUp(remNode.rightChild)
+                remNode.leftChild != null -> RbRemoveFixUp(remNode.leftChild)
+                remNode.rightChild != null -> RbRemoveFixUp(remNode.rightChild)
                 else->
                 {
+
                     nil = Node(key = remNode.key, value = remNode.value,color = Color.BLACK)
                     nil.parent =remNode.parent
-                    println(nil.value.toString()+"vot")
-                    println(nil.parent!!.value.toString()+"svot")
-                    //RbRemoveFixUp(nil)
+                    print(nil.value)
+                    if (remNode.parent!!.leftChild ==null) remNode!!.parent!!.leftChild=nil
+                    else remNode!!.parent!!.rightChild = nil
+
+                    RbRemoveFixUp(nil)///her
+                    if (nil.parent!!.leftChild== nil) nil.parent!!.leftChild =null
+                    else nil.parent!!.rightChild = null
                 }
             }
+
         }
         return
 
     }
 
-//
-//    private fun RbRemoveFixUp(x: Node<T, P>?)
-//    {
-//        var node = x// think about if x is nil
-//        if (x!!.value == x.parent!!.value) //node is nil need to clear him //he will destroy when w eleavw del fun???
-//        while(x!=root && isBlack(x))
-//        {
-//            if (x==x!!.parent!!.leftChild)
-//            {
-//
-//            }
-//            else
-//        }
-//
-//
-//
-//    }
 
+    private fun RbRemoveFixUp(x: Node<T, P>?) {
+        var w: Node<T, P>?
+        var node = x
+        while (node != root && isBlack(node)) {
+            if (node == node!!.parent!!.leftChild) {
+                w = node.parent!!.rightChild
+                if (isBlack(w)==false){
+                    w!!.color = Color.BLACK
+                    node.parent!!.color = Color.RED
+                    leftRotate(node.parent!!)
+                    w = node.parent!!.rightChild
+                }
+                if (isBlack(w!!.leftChild)&& isBlack(w.rightChild)){
+                    w.color = Color.RED
+                    node = node.parent
+                }
+                else if (isBlack(w.rightChild))
+                {
+                    w.leftChild!!.color = Color.BLACK
+                    w.color = Color.RED
+                    rightRotate(w)
+                    w = node.parent!!.rightChild
+
+                }//
+                else{
+                    w.color = node.parent!!.color
+                    node.parent!!.color = Color.BLACK
+                    w.rightChild!!.color = Color.BLACK
+                    leftRotate(node.parent!!)
+                    node = root
+                }
+
+            }
+
+
+
+            else {
+                w = node.parent!!.leftChild
+                if (isBlack(w) == false){
+                    w!!.color = Color.BLACK
+                    node.parent!!.color = Color.RED
+                    rightRotate(node.parent!!)
+                    w = node.parent!!.leftChild
+                }
+                if (isBlack(w!!.rightChild)&& isBlack(w.leftChild)){
+                    w.color = Color.RED///????cuurious
+                    node = node.parent
+                }
+                else if (isBlack(w.leftChild))
+                {
+                    w.rightChild!!.color = Color.BLACK
+                    w.color = Color.RED
+                    leftRotate(w)
+                    w = node.parent!!.leftChild
+
+                }
+                else{
+                    w.color = node.parent!!.color
+                    node.parent!!.color = Color.BLACK
+                    w.leftChild!!.color = Color.BLACK
+                    rightRotate(node.parent!!)
+                    node = root
+                }
+            }
+        }
+        if (isBlack(node)==false) node!!.color =Color.BLACK
+    }
 
     private fun isBlack(node:Node<T,P>?):Boolean
     {
@@ -310,4 +361,6 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         if (node.color ==Color.BLACK) return true
         return  false
     }
+
+
 }

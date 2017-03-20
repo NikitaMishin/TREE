@@ -54,8 +54,11 @@ internal class RbTreeTest {
         assertEquals(2,IdealTree.searchByKey(2))
 
     }//ok
+
     @Test
     fun searchInEmptyTree() {
+
+
         var Tree = RbTree<Int,Int>()
         assertEquals(null,Tree.searchByKey(5))
         assertEquals(null,Tree.searchByKey(4))

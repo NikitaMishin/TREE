@@ -3,7 +3,7 @@ import java.util.*
 /**
  * Created by nikita on 03.03.17.
  */
-open class TreeIterator <T:Comparable<T>,P> (var node: Node<T,P>):Iterator<Node<T,P>> {
+open class TreeIterator <T:Comparable<T>,P> (var node: Node<T,P>?):Iterator<Node<T,P>> {
     private var next :Node<T,P>? = null
     private  var v :Node<T,P>? = null
     private  fun getNodeByMinKey(root:Node<T,P>):Node<T,P>
@@ -15,9 +15,13 @@ open class TreeIterator <T:Comparable<T>,P> (var node: Node<T,P>):Iterator<Node<
 
     override fun hasNext(): Boolean
     {
+        if (node==null)
+        {
+            return false
+        }
         if (next==null)
         {
-            next = getNodeByMinKey(node)
+            next = getNodeByMinKey(node!!)
             return true
         }
         v = next

@@ -16,9 +16,9 @@ open class Node<T :Comparable<T>, P>(var key: T, var value:P,var color:Color = C
     var leftChild:Node<T,P>? = null
     var rightChild:Node<T,P>? = null
     var parent:Node<T,P>? = null
-    override fun equals(other: Any?): Boolean {
-        if (other is Node<*, *>) return  this.key==other.key && this.value==other.value  && this.color ==other.color
-        return false
-    }
+    //override fun equals(other: Any?): Boolean {
+      //  if (other is Node<*, *>) return  this.key==other.key && this.value==other.value  && this.color ==other.color
+       // return false
+   // }
 
 }
