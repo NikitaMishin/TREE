@@ -1,5 +1,4 @@
 
-
 /**
  * Created by nikita on 27.02.17.
  */
@@ -7,7 +6,7 @@
 /**
  *
  */
-open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P> {
+open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P>, Iterable<  Node<T,P>>{
 
     public fun isItRbTree():Boolean {
         if (root==null) return true
@@ -25,9 +24,10 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         if (isBlack(node)) leftHeight++
         return leftHeight
     }
+
     override fun iterator(): Iterator<Node<T, P>> =TreeIterator(root)
 
-    override fun searchByKey(key: T): P? {
+    override fun search(key: T): P? {
         var tmp: Node<T, P>? = root
         while (tmp != null) {
             when {
@@ -37,9 +37,9 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             }
         }
         return null
-    }//ok
+    }
 
-    override fun insertNode(key: T, value: P):Boolean {
+    override fun insert(key: T, value: P):Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
@@ -156,11 +156,6 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             node.parent?.leftChild == node -> node.parent?.leftChild = copyNode
             node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
             else -> {
-                println(copyNode.value.toString()+"its copynode")
-                print (node.value)
-                println(node.color)
-                var printer= TreePrinter()
-                printer.printTreeAsTree(this)
                 throw UnsupportedOperationException("Bad in rotate right")
             }
         }
@@ -168,13 +163,6 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         node.parent = copyNode
     }
 
-   /* private fun transplant(v: Node<T, P>, u: Node<T, P>) {
-        if (v.parent == null) root = u
-        else if (v.parent!!.leftChild == v) v.parent!!.leftChild = u
-        else v.parent!!.rightChild = u
-        u.parent = v.parent
-    }
-    */
     override fun getValueByMinKey(): P? {
         if (root == null) {
             return null
@@ -193,24 +181,8 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         return tmp?.value
     }
 
-   // fun printTreeByBFS() = printTreeByBFS(root)
-   /* open fun printTreeByBFS(node: Node<T, P>?) {
-        if (node == null) throw UnsupportedOperationException("Node is null!!")
-        var queue: MyQueue<Node<T, P>> = MyQueue()
-        queue.add(node)
-        var tmp: Node<T, P>
-        while (queue.isEmpty() != true) {
-            tmp = queue.remove()
-            print(" " + tmp.value)
-            if (tmp.leftChild != null) queue.add(tmp.leftChild!!)
-            if (tmp.rightChild != null) queue.add(tmp.rightChild!!)
-        }
 
-    }
-*/
-
-
-    override fun removeNodeByKey(key: T) {
+    override fun delete(key: T):Boolean {
         var tmp: Node<T, P>? = null
         var removedNode: Node<T, P>? = root
         link@ while (removedNode != null) {
@@ -224,13 +196,14 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         }
         if (removedNode == null) {
             println("Can't remove Node by key =  $key. Don't exist!!")
-            return
+            return false
         }
         if (removedNode==root&& removedNode.leftChild==null&& removedNode.rightChild==null) {
             root = null
-            return
+            return true
         }
         removeNode(removedNode)
+        return true
     }
 
     private fun removeNode(x: Node<T,P>) {
@@ -258,7 +231,6 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         else when {
             remNode.parent!!.leftChild == remNode -> if (right) remNode.parent!!.leftChild = remNode.rightChild else remNode.parent!!.leftChild = remNode.leftChild
             remNode.parent!!.rightChild == remNode -> if (right) remNode.parent!!.rightChild = remNode.rightChild else remNode.parent!!.rightChild = remNode.leftChild
-            //else->
         }
         if (isBlack(remNode))
         {
@@ -271,7 +243,6 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
 
                     nil = Node(key = remNode.key, value = remNode.value,color = Color.BLACK)
                     nil.parent =remNode.parent
-                    print(nil.value)
                     if (remNode.parent!!.leftChild ==null) remNode!!.parent!!.leftChild=nil
                     else remNode!!.parent!!.rightChild = nil
 
@@ -290,9 +261,9 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
     private fun RbRemoveFixUp(x: Node<T, P>?) {
         var w: Node<T, P>?
         var node = x
-        while (node != root && isBlack(node)) {
-            if (node == node!!.parent!!.leftChild) {
-                w = node.parent!!.rightChild
+        while (node !== root && isBlack(node)) {
+            if (node === node!!.parent!!.leftChild) {
+                w = node!!.parent!!.rightChild
                 if (isBlack(w)==false){
                     w!!.color = Color.BLACK
                     node.parent!!.color = Color.RED
@@ -324,7 +295,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
 
 
             else {
-                w = node.parent!!.leftChild
+                w = node!!.parent!!.leftChild
                 if (isBlack(w) == false){
                     w!!.color = Color.BLACK
                     node.parent!!.color = Color.RED

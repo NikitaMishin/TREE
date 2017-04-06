@@ -7,20 +7,15 @@
  * BST for key Type T and value Type P
  *
  * fun "searchBykey" search node with input key and return value of this node else return null
- * fun "insertNode" insert input value by  input key. if key isn't unique then fun return message "Already have value by key = $key"
- * fun "removeNodeByKey" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
+ * fun "insert" insert input value by  input key. if key isn't unique then fun return message "Already have value by key = $key"
+ * fun "delete" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
  */
 
-open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,P> { //need to test //tomorrow
-    override fun iterator(): Iterator<Node<T, P>> {
-        if (root != null) {
-            return TreeIterator(root!!)
-        } else {
-            throw UnsupportedOperationException("root ==null")
-        } //To change body of created functions use File | Settings | File Templates.
-    }
-    override fun searchByKey(key: T): P? {
-        //print("f")
+open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,P>, Iterable<  Node<T,P>> {
+
+    override fun iterator(): Iterator<Node<T, P>> =TreeIterator(root)
+
+    override fun search(key: T): P? {
         var tmp :Node<T,P>?   = root
         while(tmp!=null) {
             when{
@@ -33,11 +28,11 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         return null
     }
 
-    override fun insertNode(key:T,value: P):Boolean {
+    override fun insert(key:T, value: P):Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
-            root = Node(key = key, value = value)//
+            root = Node(key = key, value = value)
             return true
         }
         link@ while (tmp != null) {
@@ -53,10 +48,10 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         }
         var newNode: Node<T, P> = Node(key = key, value = value)
         newNode.parent = tmp
-        //newNode.setParent(tmp)
-        if (flag == false) {
+        if (!flag) {
             tmp!!.leftChild = newNode ///////
-        } else tmp!!.rightChild = newNode
+        }
+        else tmp!!.rightChild = newNode
         return true
     }
 
@@ -75,7 +70,8 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         var tmp: Node<T,P>? = root
         while(tmp?.leftChild != null) tmp = tmp.leftChild
         return  tmp?.value
-    }///
+    }
+
     private  fun getNodeByMinKey(root:Node<T,P>):Node<T,P>{//check on null??
 //chekc
         var tmp = root
@@ -95,12 +91,12 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
 
     }
 
-    override fun removeNodeByKey(key: T) {
+    override fun delete(key: T):Boolean {
         var removedNode:Node<T,P>? = getNodeBySearchByKey (key)
 
         if (removedNode == null) {
             System.out.println("Nothing to remove by key = $key!")
-            return
+            return false
         }
         if (removedNode.leftChild != null && removedNode.rightChild != null){
             var copyNode = getNodeByMinKey(removedNode.rightChild!!)
@@ -123,7 +119,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                 removedNode.parent!!.rightChild == removedNode -> removedNode.parent!!.rightChild = copyNode
                 removedNode.parent!!.leftChild == removedNode -> removedNode.parent!!.leftChild = copyNode
             }
-            //removeNode.rightChild == null// and other
+
         }
         else {
             if (removedNode.leftChild != null) {
@@ -131,7 +127,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                 when {//how exactly work when
                     removedNode.parent == null -> {
                         root = removedNode.leftChild
-                        return
+                        return true
                     }
 
                     removedNode.parent?.leftChild == removedNode -> removedNode.parent?.leftChild = removedNode.leftChild
@@ -143,7 +139,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                 when{
                     removedNode.parent == null -> {
                         root = removedNode.rightChild
-                        return
+                        return true
                     }
                     removedNode.parent?.leftChild == removedNode -> removedNode.parent?.leftChild = removedNode.rightChild
                     removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = removedNode.rightChild
@@ -153,24 +149,13 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                 when{
                         removedNode.parent == null -> {
                             root = null
-                            return
+                            return true
                         }
                         removedNode.parent?.leftChild == removedNode -> removedNode.parent?.leftChild = null
                         removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = null
                 }
             }
         }
+        return true
     }
-
-
-  /*  fun printTree() = printTree(this.root, 0)
-    public  open fun printTree(node:Node <T,P>?, level:Int){//need to override in black tree
-        if(node != null) {
-            printTree(node.rightChild, level +1)
-            for (i in 1..level ) print("  |")
-            println(node.value.toString())
-            printTree(node.leftChild,level + 1)
-        }
-    }
-    */
 }

@@ -3,6 +3,11 @@ import java.util.*
 /**
  * Created by nikita on 03.03.17.
  */
+//change iretator/
+/// add interface itwraotre
+//change
+
+
 open class TreeIterator <T:Comparable<T>,P> (var node: Node<T,P>?):Iterator<Node<T,P>> {
     private var next :Node<T,P>? = null
     private  var v :Node<T,P>? = null
