@@ -1,31 +1,35 @@
+package RbTree
 
+import Nodes.Color
+import Nodes.Node
+import  Tree
+import TreeIterator
 /**
  * Created by nikita on 27.02.17.
  */
 
-/**
- *
- */
-open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tree<T,P>, Iterable<  Node<T,P>>{
 
-    public fun isItRbTree():Boolean {
-        if (root==null) return true
-        return blackHeight(root!!)>=0
+open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tree<T, P>, Iterable<Node<T, P>> {
+
+    internal fun isItRbTree(): Boolean {
+        if (root == null) return true
+        return blackHeight(root!!) >= 0
     }
-    private fun  blackHeight(node: Node<T, P>) : Int//check
+
+    private fun blackHeight(node: Node<T, P>): Int//check
     {
-        var leftHeight =0
+        var leftHeight = 0
         var rightHeight = 0
         if (node.leftChild != null) leftHeight = blackHeight(node.leftChild!!)
         if (node.rightChild != null) rightHeight = blackHeight(node.rightChild!!)
-        if (leftHeight!=rightHeight) {
+        if (leftHeight != rightHeight) {
             return -100
         }
         if (isBlack(node)) leftHeight++
         return leftHeight
     }
 
-    override fun iterator(): Iterator<Node<T, P>> =TreeIterator(root)
+    override fun iterator(): Iterator<Node<T, P>> = TreeIterator(root)
 
     override fun search(key: T): P? {
         var tmp: Node<T, P>? = root
@@ -39,7 +43,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         return null
     }
 
-    override fun insert(key: T, value: P):Boolean {
+    override fun insert(key: T, value: P): Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
@@ -84,16 +88,14 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                     tmp.color = Color.BLACK
                     node.parent?.parent?.color = Color.RED
                     node = node.parent!!.parent!!
-                }
-                else  {
-                    if (node.parent?.rightChild == node)
-                    {
+                } else {
+                    if (node.parent?.rightChild == node) {
                         node = node.parent!!
                         leftRotate(node)
                     }
-                        node!!.parent!!.color = Color.BLACK
-                        node.parent!!.parent?.color = Color.RED
-                        rightRotate((node.parent!!.parent!!))//this shiy and 101
+                    node!!.parent!!.color = Color.BLACK
+                    node.parent!!.parent?.color = Color.RED
+                    rightRotate((node.parent!!.parent!!))//this shiy and 101
 
                 }
 
@@ -105,14 +107,13 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                     node.parent?.parent?.color = Color.RED
                     node = node.parent!!.parent!!
                 } else {
-                    if (node.parent?.leftChild == node)
-                    {
+                    if (node.parent?.leftChild == node) {
                         node = node.parent!!
                         rightRotate(node)
                     }
-                        node.parent?.color = Color.BLACK
-                        node.parent?.parent?.color = Color.RED
-                        leftRotate(node.parent!!.parent!!)////??
+                    node.parent?.color = Color.BLACK
+                    node.parent?.parent?.color = Color.RED
+                    leftRotate(node.parent!!.parent!!)////??
 
                 }
             }
@@ -128,11 +129,9 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         if (copyNode!!.leftChild != null) copyNode.leftChild!!.parent = node
         copyNode.parent = node.parent
 
-        if (node.parent == null)
-        {
+        if (node.parent == null) {
             this.root = copyNode
-        }
-        else {
+        } else {
             when {
                 node.parent?.leftChild == node -> node.parent?.leftChild = copyNode
                 node.parent?.rightChild == node -> node.parent?.rightChild = copyNode
@@ -182,7 +181,7 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
     }
 
 
-    override fun delete(key: T):Boolean {
+    override fun delete(key: T): Boolean {
         var tmp: Node<T, P>? = null
         var removedNode: Node<T, P>? = root
         link@ while (removedNode != null) {
@@ -195,10 +194,10 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             }
         }
         if (removedNode == null) {
-            println("Can't remove Node by key =  $key. Don't exist!!")
+            println("Can't remove Nodes.Node by key =  $key. Don't exist!!")
             return false
         }
-        if (removedNode==root&& removedNode.leftChild==null&& removedNode.rightChild==null) {
+        if (removedNode == root && removedNode.leftChild == null && removedNode.rightChild == null) {
             root = null
             return true
         }
@@ -206,10 +205,10 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         return true
     }
 
-    private fun removeNode(x: Node<T,P>) {
+    private fun removeNode(x: Node<T, P>) {
         var remNode = x
         var right = true
-        var nil:Node<T,P>
+        var nil: Node<T, P>
         when {
             x.leftChild != null && x.rightChild != null -> {
                 remNode = getNodeByMinKey(x.rightChild!!)
@@ -223,31 +222,26 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
             }
             x.rightChild != null -> remNode.rightChild!!.parent = x.parent
         }
-        if (remNode.parent == null)
-        {
+        if (remNode.parent == null) {
             if (right) root = remNode.rightChild
             else root = remNode.leftChild
-        }
-        else when {
+        } else when {
             remNode.parent!!.leftChild == remNode -> if (right) remNode.parent!!.leftChild = remNode.rightChild else remNode.parent!!.leftChild = remNode.leftChild
             remNode.parent!!.rightChild == remNode -> if (right) remNode.parent!!.rightChild = remNode.rightChild else remNode.parent!!.rightChild = remNode.leftChild
         }
-        if (isBlack(remNode))
-        {
-            when
-            {
+        if (isBlack(remNode)) {
+            when {
                 remNode.leftChild != null -> RbRemoveFixUp(remNode.leftChild)
                 remNode.rightChild != null -> RbRemoveFixUp(remNode.rightChild)
-                else->
-                {
+                else -> {
 
-                    nil = Node(key = remNode.key, value = remNode.value,color = Color.BLACK)
-                    nil.parent =remNode.parent
-                    if (remNode.parent!!.leftChild ==null) remNode!!.parent!!.leftChild=nil
+                    nil = Node(key = remNode.key, value = remNode.value, color = Color.BLACK)
+                    nil.parent = remNode.parent
+                    if (remNode.parent!!.leftChild == null) remNode!!.parent!!.leftChild = nil
                     else remNode!!.parent!!.rightChild = nil
 
                     RbRemoveFixUp(nil)///her
-                    if (nil.parent!!.leftChild== nil) nil.parent!!.leftChild =null
+                    if (nil.parent!!.leftChild == nil) nil.parent!!.leftChild = null
                     else nil.parent!!.rightChild = null
                 }
             }
@@ -264,25 +258,23 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
         while (node !== root && isBlack(node)) {
             if (node === node!!.parent!!.leftChild) {
                 w = node!!.parent!!.rightChild
-                if (isBlack(w)==false){
+                if (isBlack(w) == false) {
                     w!!.color = Color.BLACK
                     node.parent!!.color = Color.RED
                     leftRotate(node.parent!!)
                     w = node.parent!!.rightChild
                 }
-                if (isBlack(w!!.leftChild)&& isBlack(w.rightChild)){
+                if (isBlack(w!!.leftChild) && isBlack(w.rightChild)) {
                     w.color = Color.RED
                     node = node.parent
-                }
-                else if (isBlack(w.rightChild))
-                {
+                } else if (isBlack(w.rightChild)) {
                     w.leftChild!!.color = Color.BLACK
                     w.color = Color.RED
                     rightRotate(w)
                     w = node.parent!!.rightChild
 
                 }//
-                else{
+                else {
                     w.color = node.parent!!.color
                     node.parent!!.color = Color.BLACK
                     w.rightChild!!.color = Color.BLACK
@@ -290,31 +282,24 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                     node = root
                 }
 
-            }
-
-
-
-            else {
+            } else {
                 w = node!!.parent!!.leftChild
-                if (isBlack(w) == false){
+                if (isBlack(w) == false) {
                     w!!.color = Color.BLACK
                     node.parent!!.color = Color.RED
                     rightRotate(node.parent!!)
                     w = node.parent!!.leftChild
                 }
-                if (isBlack(w!!.rightChild)&& isBlack(w.leftChild)){
+                if (isBlack(w!!.rightChild) && isBlack(w.leftChild)) {
                     w.color = Color.RED///????cuurious
                     node = node.parent
-                }
-                else if (isBlack(w.leftChild))
-                {
+                } else if (isBlack(w.leftChild)) {
                     w.rightChild!!.color = Color.BLACK
                     w.color = Color.RED
                     leftRotate(w)
                     w = node.parent!!.leftChild
 
-                }
-                else{
+                } else {
                     w.color = node.parent!!.color
                     node.parent!!.color = Color.BLACK
                     w.leftChild!!.color = Color.BLACK
@@ -323,14 +308,13 @@ open class RbTree <T:Comparable<T>,P>(private  var root: Node<T,P>? = null) :Tre
                 }
             }
         }
-        if (isBlack(node)==false) node!!.color =Color.BLACK
+        if (isBlack(node) == false) node!!.color = Color.BLACK
     }
 
-    private fun isBlack(node:Node<T,P>?):Boolean
-    {
+    private fun isBlack(node: Node<T, P>?): Boolean {
         if (node == null) return true
-        if (node.color ==Color.BLACK) return true
-        return  false
+        if (node.color == Color.BLACK) return true
+        return false
     }
 
 

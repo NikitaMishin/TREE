@@ -1,24 +1,29 @@
+package BST
+
+import  Nodes.Node
+import Tree
+import TreeIterator
 /**
  * Created by nikita on 27.02.17.
  */
 
 
 /**
- * BST for key Type T and value Type P
+ * BST.BST for key Type T and value Type P
  *
  * fun "searchBykey" search node with input key and return value of this node else return null
  * fun "insert" insert input value by  input key. if key isn't unique then fun return message "Already have value by key = $key"
  * fun "delete" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
  */
 
-open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,P>, Iterable<  Node<T,P>> {
+open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tree<T, P>, Iterable<Node<T, P>> {
 
-    override fun iterator(): Iterator<Node<T, P>> =TreeIterator(root)
+    override fun iterator(): Iterator<Node<T, P>> = TreeIterator(root)
 
     override fun search(key: T): P? {
-        var tmp :Node<T,P>?   = root
-        while(tmp!=null) {
-            when{
+        var tmp: Node<T, P>? = root
+        while (tmp != null) {
+            when {
                 tmp.key == key -> return tmp.value
                 key > tmp.key -> tmp = tmp.rightChild
                 key < tmp.key -> tmp = tmp.leftChild
@@ -28,7 +33,7 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         return null
     }
 
-    override fun insert(key:T, value: P):Boolean {
+    override fun insert(key: T, value: P): Boolean {
         var flag: Boolean = false
         var tmp: Node<T, P>? = root
         if (root == null) {
@@ -50,38 +55,39 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
         newNode.parent = tmp
         if (!flag) {
             tmp!!.leftChild = newNode ///////
-        }
-        else tmp!!.rightChild = newNode
+        } else tmp!!.rightChild = newNode
         return true
     }
 
     override fun getValueByMaxKey(): P? {
-        if (root == null){
+        if (root == null) {
             return null
         }
-        var tmp: Node<T,P>? = root
-        while(tmp?.rightChild != null) tmp = tmp.rightChild
-        return  tmp?.value
-    }
-    override fun getValueByMinKey(): P? {
-        if (root == null){
-            return null
-        }
-        var tmp: Node<T,P>? = root
-        while(tmp?.leftChild != null) tmp = tmp.leftChild
-        return  tmp?.value
+        var tmp: Node<T, P>? = root
+        while (tmp?.rightChild != null) tmp = tmp.rightChild
+        return tmp?.value
     }
 
-    private  fun getNodeByMinKey(root:Node<T,P>):Node<T,P>{//check on null??
+    override fun getValueByMinKey(): P? {
+        if (root == null) {
+            return null
+        }
+        var tmp: Node<T, P>? = root
+        while (tmp?.leftChild != null) tmp = tmp.leftChild
+        return tmp?.value
+    }
+
+    private fun getNodeByMinKey(root: Node<T, P>): Node<T, P> {//check on null??
 //chekc
         var tmp = root
-        while(tmp.leftChild!=null) tmp = tmp.leftChild!!//
+        while (tmp.leftChild != null) tmp = tmp.leftChild!!//
         return tmp
     }
-    private  fun getNodeBySearchByKey (key: T):Node<T,P>?{
-        var tmp :Node<T,P>?   = root
-        while(tmp!=null) {
-            when{
+
+    private fun getNodeBySearchByKey(key: T): Node<T, P>? {
+        var tmp: Node<T, P>? = root
+        while (tmp != null) {
+            when {
                 tmp.key == key -> return tmp
                 key > tmp.key -> tmp = tmp.rightChild
                 key < tmp.key -> tmp = tmp.leftChild
@@ -91,37 +97,36 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
 
     }
 
-    override fun delete(key: T):Boolean {
-        var removedNode:Node<T,P>? = getNodeBySearchByKey (key)
+    override fun delete(key: T): Boolean {
+        var removedNode: Node<T, P>? = getNodeBySearchByKey(key)
 
         if (removedNode == null) {
             System.out.println("Nothing to remove by key = $key!")
             return false
         }
-        if (removedNode.leftChild != null && removedNode.rightChild != null){
+        if (removedNode.leftChild != null && removedNode.rightChild != null) {
             var copyNode = getNodeByMinKey(removedNode.rightChild!!)
 
-            if (copyNode.rightChild!=null) copyNode.rightChild!!.parent =  copyNode.parent
-            when{
-                copyNode.parent!!.rightChild == copyNode-> copyNode.parent!!.rightChild =copyNode.rightChild
-                copyNode.parent!!.leftChild == copyNode->copyNode.parent!!.leftChild = copyNode.rightChild
-                //else->  this.root = copyNode  //parent -null removed is root
+            if (copyNode.rightChild != null) copyNode.rightChild!!.parent = copyNode.parent
+            when {
+                copyNode.parent!!.rightChild == copyNode -> copyNode.parent!!.rightChild = copyNode.rightChild
+                copyNode.parent!!.leftChild == copyNode -> copyNode.parent!!.leftChild = copyNode.rightChild
+            //else->  this.root = copyNode  //parent -null removed is root
             }
 
             copyNode.parent = removedNode.parent
             copyNode.leftChild = removedNode.leftChild
-            if (removedNode.leftChild!=null )removedNode.leftChild!!.parent = copyNode
+            if (removedNode.leftChild != null) removedNode.leftChild!!.parent = copyNode
             copyNode.rightChild = removedNode.rightChild
-            if(removedNode.rightChild != null)removedNode.rightChild!!.parent = copyNode //weak point
+            if (removedNode.rightChild != null) removedNode.rightChild!!.parent = copyNode //weak point
 
-            when{
-                removedNode.parent == null-> this.root = copyNode
+            when {
+                removedNode.parent == null -> this.root = copyNode
                 removedNode.parent!!.rightChild == removedNode -> removedNode.parent!!.rightChild = copyNode
                 removedNode.parent!!.leftChild == removedNode -> removedNode.parent!!.leftChild = copyNode
             }
 
-        }
-        else {
+        } else {
             if (removedNode.leftChild != null) {
                 removedNode.leftChild?.parent = removedNode.parent
                 when {//how exactly work when
@@ -134,9 +139,9 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                     removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = removedNode.leftChild
                 }
             }
-            if (removedNode.rightChild!= null) {
+            if (removedNode.rightChild != null) {
                 removedNode.rightChild?.parent = removedNode.parent
-                when{
+                when {
                     removedNode.parent == null -> {
                         root = removedNode.rightChild
                         return true
@@ -145,14 +150,14 @@ open class  BST <T:Comparable<T>,P>( private var root: Node<T,P>?=null) :Tree<T,
                     removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = removedNode.rightChild
                 }
             }
-            if (removedNode.rightChild == null&&removedNode.leftChild == null) {
-                when{
-                        removedNode.parent == null -> {
-                            root = null
-                            return true
-                        }
-                        removedNode.parent?.leftChild == removedNode -> removedNode.parent?.leftChild = null
-                        removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = null
+            if (removedNode.rightChild == null && removedNode.leftChild == null) {
+                when {
+                    removedNode.parent == null -> {
+                        root = null
+                        return true
+                    }
+                    removedNode.parent?.leftChild == removedNode -> removedNode.parent?.leftChild = null
+                    removedNode.parent?.rightChild == removedNode -> removedNode.parent?.rightChild = null
                 }
             }
         }
