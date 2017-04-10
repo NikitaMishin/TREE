@@ -1,5 +1,5 @@
 
-import Nodes.Node
+import RbTree.RbNode
 import jdk.nashorn.internal.ir.annotations.Immutable
 import org.junit.jupiter.api.Test
 
@@ -39,7 +39,7 @@ internal class RbTreeTest {
         for (i in 1..1000)
             Tree.insert(random.nextInt(), random.nextFloat().toString())
         var prev: RbTree.RbTree<Int, String>
-        val list = mutableListOf<Node<Int, String>>()
+        val list = mutableListOf<RbNode<Int, String>>()
         for (i in Tree) list.add(i)
         for (i in 1..list.size - 2) assertEquals(true, list[i + 1].key > list[i].key)
         list.clear()

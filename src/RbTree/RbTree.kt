@@ -1,22 +1,20 @@
 package RbTree
 
-import Nodes.Color
-import Nodes.Node
-import  Tree
-import TreeIterator
+import InterfacesAndEnums.Color
+import  InterfacesAndEnums.Tree
+
 /**
  * Created by nikita on 27.02.17.
  */
 
-
-open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tree<T, P>, Iterable<Node<T, P>> {
+open class RbTree<T : Comparable<T>, P>(internal var root: RbNode<T, P>? = null) : Tree<T, P>, Iterable<RbNode<T, P>> {
 
     internal fun isItRbTree(): Boolean {
         if (root == null) return true
         return blackHeight(root!!) >= 0
     }
 
-    private fun blackHeight(node: Node<T, P>): Int//check
+    private fun blackHeight(node: RbNode<T, P>): Int//check
     {
         var leftHeight = 0
         var rightHeight = 0
@@ -29,10 +27,10 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         return leftHeight
     }
 
-    override fun iterator(): Iterator<Node<T, P>> = TreeIterator(root)
+    override fun iterator(): Iterator<RbNode<T, P>> = TreeIterator(root)
 
     override fun search(key: T): P? {
-        var tmp: Node<T, P>? = root
+        var tmp: RbNode<T, P>? = root
         while (tmp != null) {
             when {
                 tmp.key == key -> return tmp.value
@@ -45,9 +43,9 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
 
     override fun insert(key: T, value: P): Boolean {
         var flag: Boolean = false
-        var tmp: Node<T, P>? = root
+        var tmp: RbNode<T, P>? = root
         if (root == null) {
-            root = Node(key, value, color = Color.BLACK)//
+            root = RbNode(key, value, color = Color.BLACK)//
             return true
         }
         link@ while (tmp != null) {
@@ -62,7 +60,7 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
                 } else tmp = tmp.leftChild
             }
         }
-        var newNode: Node<T, P> = Node(key = key, value = value, color = Color.RED)
+        var newNode: RbNode<T, P> = RbNode(key = key, value = value, color = Color.RED)
         newNode.parent = tmp
         if (flag == false) {
             tmp!!.leftChild = newNode ///////
@@ -71,15 +69,15 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         return true
     }//ok
 
-    private fun getNodeByMinKey(node: Node<T, P>): Node<T, P> {
+    private fun getNodeByMinKey(node: RbNode<T, P>): RbNode<T, P> {
         var tmp = node
         while (tmp.leftChild != null) tmp = tmp.leftChild!!
         return tmp
     }//ok
 
-    private fun fixUpInsertNode(x: Node<T, P>) {
+    private fun fixUpInsertNode(x: RbNode<T, P>) {
         var node = x
-        var tmp: Node<T, P>? = null
+        var tmp: RbNode<T, P>?
         while (node.parent != null && node.parent!!.color == Color.RED) {
             if (node.parent?.parent?.leftChild == node.parent) {//?
                 tmp = node.parent?.parent?.rightChild//null?
@@ -121,7 +119,7 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         root!!.color = Color.BLACK
     }
 
-    private fun leftRotate(node: Node<T, P>) {
+    private fun leftRotate(node: RbNode<T, P>) {
         if (node.rightChild == null) throw UnsupportedOperationException("Bad in fun left rotate right child ==null!")
         var copyNode = node.rightChild
         node.rightChild = copyNode?.leftChild
@@ -142,13 +140,13 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         node.parent = copyNode
     }
 
-    private fun rightRotate(node: Node<T, P>) {
+    private fun rightRotate(node: RbNode<T, P>) {
         if (node.leftChild == null) throw UnsupportedOperationException("Bad in fun left rotate left child ==null!")
         var copyNode = node.leftChild
         node.leftChild = copyNode?.rightChild
 
         if (copyNode!!.rightChild != null) copyNode.rightChild!!.parent = node
-        copyNode.parent = node.parent//>>>??
+        copyNode.parent = node.parent
 
         if (node.parent == null) this.root = copyNode
         else when {
@@ -162,28 +160,28 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         node.parent = copyNode
     }
 
-    override fun getValueByMinKey(): P? {
+    fun getValueByMinKey(): P? {
         if (root == null) {
             return null
         }
-        var tmp: Node<T, P>? = root
+        var tmp: RbNode<T, P>? = root
         while (tmp?.leftChild != null) tmp = tmp.leftChild
         return tmp?.value
     }//ok
 
-    override fun getValueByMaxKey(): P? {
+    fun getValueByMaxKey(): P? {
         if (root == null) {
             return null
         }
-        var tmp: Node<T, P>? = root
+        var tmp: RbNode<T, P>? = root
         while (tmp?.rightChild != null) tmp = tmp.rightChild
         return tmp?.value
     }
 
 
     override fun delete(key: T): Boolean {
-        var tmp: Node<T, P>? = null
-        var removedNode: Node<T, P>? = root
+        var tmp: RbNode<T, P>?
+        var removedNode: RbNode<T, P>? = root
         link@ while (removedNode != null) {
             when {
                 removedNode.key == key -> {
@@ -194,7 +192,6 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
             }
         }
         if (removedNode == null) {
-            println("Can't remove Nodes.Node by key =  $key. Don't exist!!")
             return false
         }
         if (removedNode == root && removedNode.leftChild == null && removedNode.rightChild == null) {
@@ -205,10 +202,10 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
         return true
     }
 
-    private fun removeNode(x: Node<T, P>) {
+    private fun removeNode(x: RbNode<T, P>) {
         var remNode = x
-        var right = true
-        var nil: Node<T, P>
+        var right = true// position of remNode
+        var nil: RbNode<T, P>
         when {
             x.leftChild != null && x.rightChild != null -> {
                 remNode = getNodeByMinKey(x.rightChild!!)
@@ -234,13 +231,11 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
                 remNode.leftChild != null -> RbRemoveFixUp(remNode.leftChild)
                 remNode.rightChild != null -> RbRemoveFixUp(remNode.rightChild)
                 else -> {
-
-                    nil = Node(key = remNode.key, value = remNode.value, color = Color.BLACK)
+                    nil = RbNode(key = remNode.key, value = remNode.value, color = Color.BLACK)
                     nil.parent = remNode.parent
-                    if (remNode.parent!!.leftChild == null) remNode!!.parent!!.leftChild = nil
-                    else remNode!!.parent!!.rightChild = nil
-
-                    RbRemoveFixUp(nil)///her
+                    if (remNode.parent!!.leftChild == null) remNode.parent!!.leftChild = nil
+                    else remNode.parent!!.rightChild = nil
+                    RbRemoveFixUp(nil)
                     if (nil.parent!!.leftChild == nil) nil.parent!!.leftChild = null
                     else nil.parent!!.rightChild = null
                 }
@@ -248,74 +243,67 @@ open class RbTree<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) :
 
         }
         return
-
     }
 
-
-    private fun RbRemoveFixUp(x: Node<T, P>?) {
-        var w: Node<T, P>?
+    private fun RbRemoveFixUp(x: RbNode<T, P>?) {
+        var tmp: RbNode<T, P>?
         var node = x
         while (node !== root && isBlack(node)) {
             if (node === node!!.parent!!.leftChild) {
-                w = node!!.parent!!.rightChild
-                if (isBlack(w) == false) {
-                    w!!.color = Color.BLACK
+                tmp = node!!.parent!!.rightChild
+                if (!isBlack(tmp)) {
+                    tmp!!.color = Color.BLACK
                     node.parent!!.color = Color.RED
                     leftRotate(node.parent!!)
-                    w = node.parent!!.rightChild
+                    tmp = node.parent!!.rightChild
                 }
-                if (isBlack(w!!.leftChild) && isBlack(w.rightChild)) {
-                    w.color = Color.RED
+                if (isBlack(tmp!!.leftChild) && isBlack(tmp.rightChild)) {
+                    tmp.color = Color.RED
                     node = node.parent
-                } else if (isBlack(w.rightChild)) {
-                    w.leftChild!!.color = Color.BLACK
-                    w.color = Color.RED
-                    rightRotate(w)
-                    w = node.parent!!.rightChild
-
-                }//
-                else {
-                    w.color = node.parent!!.color
+                } else if (isBlack(tmp.rightChild)) {
+                    tmp.leftChild!!.color = Color.BLACK
+                    tmp.color = Color.RED
+                    rightRotate(tmp)
+                    tmp = node.parent!!.rightChild
+                } else {
+                    tmp.color = node.parent!!.color
                     node.parent!!.color = Color.BLACK
-                    w.rightChild!!.color = Color.BLACK
+                    tmp.rightChild!!.color = Color.BLACK
                     leftRotate(node.parent!!)
                     node = root
                 }
-
             } else {
-                w = node!!.parent!!.leftChild
-                if (isBlack(w) == false) {
-                    w!!.color = Color.BLACK
+                tmp = node!!.parent!!.leftChild
+                if (!isBlack(tmp)) {
+                    tmp!!.color = Color.BLACK
                     node.parent!!.color = Color.RED
                     rightRotate(node.parent!!)
-                    w = node.parent!!.leftChild
+                    tmp = node.parent!!.leftChild
                 }
-                if (isBlack(w!!.rightChild) && isBlack(w.leftChild)) {
-                    w.color = Color.RED///????cuurious
+                if (isBlack(tmp!!.rightChild) && isBlack(tmp.leftChild)) {
+                    tmp.color = Color.RED
                     node = node.parent
-                } else if (isBlack(w.leftChild)) {
-                    w.rightChild!!.color = Color.BLACK
-                    w.color = Color.RED
-                    leftRotate(w)
-                    w = node.parent!!.leftChild
-
+                } else if (isBlack(tmp.leftChild)) {
+                    tmp.rightChild!!.color = Color.BLACK
+                    tmp.color = Color.RED
+                    leftRotate(tmp)
+                    tmp = node.parent!!.leftChild
                 } else {
-                    w.color = node.parent!!.color
+                    tmp.color = node.parent!!.color
                     node.parent!!.color = Color.BLACK
-                    w.leftChild!!.color = Color.BLACK
+                    tmp.leftChild!!.color = Color.BLACK
                     rightRotate(node.parent!!)
                     node = root
                 }
             }
         }
-        if (isBlack(node) == false) node!!.color = Color.BLACK
+        if (!isBlack(node)) node!!.color = Color.BLACK
     }
 
-    private fun isBlack(node: Node<T, P>?): Boolean {
+    private fun isBlack(node: RbNode<T, P>?): Boolean {
         if (node == null) return true
         if (node.color == Color.BLACK) return true
         return false
     }
-
 
 }

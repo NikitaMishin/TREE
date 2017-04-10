@@ -1,8 +1,7 @@
 package BST
 
-import  Nodes.Node
-import Tree
-import TreeIterator
+import InterfacesAndEnums.Tree
+import RbTree.TreeIterator
 /**
  * Created by nikita on 27.02.17.
  */
@@ -16,12 +15,12 @@ import TreeIterator
  * fun "delete" remove node by input key. fun print "Nothing to remove by key = $key!"   if nothing to remove by this key
  */
 
-open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tree<T, P>, Iterable<Node<T, P>> {
+open class BST<T : Comparable<T>, P>(internal var root: BstNode<T, P>? = null) : Tree<T, P>, Iterable<BstNode<T, P>> {
 
-    override fun iterator(): Iterator<Node<T, P>> = TreeIterator(root)
+    override fun iterator(): Iterator<BstNode<T, P>> = TreeIterator(root)
 
     override fun search(key: T): P? {
-        var tmp: Node<T, P>? = root
+        var tmp: BstNode<T, P>? = root
         while (tmp != null) {
             when {
                 tmp.key == key -> return tmp.value
@@ -35,9 +34,9 @@ open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tr
 
     override fun insert(key: T, value: P): Boolean {
         var flag: Boolean = false
-        var tmp: Node<T, P>? = root
+        var tmp: BstNode<T, P>? = root
         if (root == null) {
-            root = Node(key = key, value = value)
+            root = BstNode(key = key, value = value)
             return true
         }
         link@ while (tmp != null) {
@@ -51,7 +50,7 @@ open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tr
                 } else tmp = tmp.leftChild
             }
         }
-        var newNode: Node<T, P> = Node(key = key, value = value)
+        var newNode: BstNode<T, P> = BstNode(key = key, value = value)
         newNode.parent = tmp
         if (!flag) {
             tmp!!.leftChild = newNode ///////
@@ -59,33 +58,33 @@ open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tr
         return true
     }
 
-    override fun getValueByMaxKey(): P? {
+    fun getValueByMaxKey(): P? {
         if (root == null) {
             return null
         }
-        var tmp: Node<T, P>? = root
+        var tmp: BstNode<T, P>? = root
         while (tmp?.rightChild != null) tmp = tmp.rightChild
         return tmp?.value
     }
 
-    override fun getValueByMinKey(): P? {
+    fun getValueByMinKey(): P? {
         if (root == null) {
             return null
         }
-        var tmp: Node<T, P>? = root
+        var tmp: BstNode<T, P>? = root
         while (tmp?.leftChild != null) tmp = tmp.leftChild
         return tmp?.value
     }
 
-    private fun getNodeByMinKey(root: Node<T, P>): Node<T, P> {//check on null??
+    private fun getNodeByMinKey(root: BstNode<T, P>): BstNode<T, P> {//check on null??
 //chekc
         var tmp = root
         while (tmp.leftChild != null) tmp = tmp.leftChild!!//
         return tmp
     }
 
-    private fun getNodeBySearchByKey(key: T): Node<T, P>? {
-        var tmp: Node<T, P>? = root
+    private fun getNodeBySearchByKey(key: T): BstNode<T, P>? {
+        var tmp: BstNode<T, P>? = root
         while (tmp != null) {
             when {
                 tmp.key == key -> return tmp
@@ -98,10 +97,10 @@ open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tr
     }
 
     override fun delete(key: T): Boolean {
-        var removedNode: Node<T, P>? = getNodeBySearchByKey(key)
+        var removedNode: BstNode<T, P>? = getNodeBySearchByKey(key)
 
         if (removedNode == null) {
-            System.out.println("Nothing to remove by key = $key!")
+            println("Nothing to remove by key = $key!")
             return false
         }
         if (removedNode.leftChild != null && removedNode.rightChild != null) {
@@ -111,7 +110,6 @@ open class BST<T : Comparable<T>, P>(internal var root: Node<T, P>? = null) : Tr
             when {
                 copyNode.parent!!.rightChild == copyNode -> copyNode.parent!!.rightChild = copyNode.rightChild
                 copyNode.parent!!.leftChild == copyNode -> copyNode.parent!!.leftChild = copyNode.rightChild
-            //else->  this.root = copyNode  //parent -null removed is root
             }
 
             copyNode.parent = removedNode.parent
