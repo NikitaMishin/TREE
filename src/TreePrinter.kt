@@ -57,7 +57,6 @@ class TreePrinter {
             printTreeAsRbTree(node.leftChild, level + 1)
         }
     }
-
     private fun <C : BTree.BTree <*, *>> printBTree(tree: C) {
         var size: Int = 0
         var levelEnd: Int = 1
@@ -72,5 +71,4 @@ class TreePrinter {
             }
         }
     }
-
 }

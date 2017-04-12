@@ -8,15 +8,14 @@ import InterfacesAndEnums.Tree
 
 
 class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: Int = 5) : Iterable<BNode<K, V>>, Tree<K, V> {
-    override fun iterator(): Iterator<BNode<K, V>> =  BtreeIterator(root)
+    override fun iterator(): Iterator<BNode<K, V>> = BtreeIterator(root)
 
     public override fun search(key: K): V? {
         var pair = search(key = key, node = root)
         if (pair == null) return null
         return pair.second.keys[pair.first].second
     }
-
-    fun search(key: K, node: BNode<K, V>? = root): Pair<Int, BNode<K, V>>?//??Int
+    fun search(key: K, node: BNode<K, V>? = root): Pair<Int, BNode<K, V>>?
     {
         if (node == null) return null
         var size = node.keys.size
@@ -26,7 +25,6 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
         if (node.isLeaf) return null
         else return search(key, node.Nodes[i])
     }
-
     override public fun insert(key: K, value: V): Boolean {
         if (root == null) {
             this.root = BNode()
@@ -34,16 +32,15 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
             return true
         }
         var r = this.root
-        if (search(key) != null) return false//alreary have
-        //if (key in r!!.keys) return false//?????? aadded  seatch?
-        if (r!!.keys.size == 2 * t - 1) {//????
+        if (search(key) != null) return false
+        if (r!!.keys.size == 2 * t - 1) {
             var s: BNode<K, V> = BNode()
             this.root = s
             s.isLeaf = false
-            s.Nodes.add(element = r) ///>>/?
+            s.Nodes.add(element = r)
             splitChild(s, 0)
-            insertNonfull(s, key, value)
-        } else insertNonfull(r, key, value)
+            insertNonFull(s, key, value)
+        } else insertNonFull(r, key, value)
         return true
     }
 
@@ -52,20 +49,15 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
         var newChild = BNode<K, V>()
         var child = parent.Nodes[index]
         newChild.isLeaf = child.isLeaf
-        for (j in 0..t - 2) {
-            newChild.keys.add(element = child.keys[t])
-            child.keys.removeAt(t)
-        }
-        if (!child.isLeaf) for (j in 0..t - 1) {
-            newChild.Nodes.add(element = child.Nodes[t])
-            child.Nodes.removeAt(t)
-        }
+        for (j in 0..t - 2)
+            newChild.keys.add(element = child.keys.removeAt(t))
+        if (!child.isLeaf)
+            for (j in 0..t - 1) newChild.Nodes.add(element = child.Nodes.removeAt(t))
         parent.Nodes.add(index + 1, newChild)
-        parent.keys.add(index, child.keys[t - 1])
-        child.keys.removeAt(t - 1)
+        parent.keys.add(index=index, element = child.keys.removeAt(t-1))
     }
 
-    private fun insertNonfull(node: BNode<K, V>, key: K, value: V) {
+    private fun insertNonFull(node: BNode<K, V>, key: K, value: V) {
         var i = 0
         var size = node.keys.size
         if (node.isLeaf) {
@@ -73,11 +65,11 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
             node.keys.add(i, Pair(key, value))
         } else {
             while (i < size && key > node.keys[i].first) i++
-            if (node.Nodes[i].keys.size == 2 * t - 1) {//i-1
+            if (node.Nodes[i].keys.size == 2 * t - 1) {
                 splitChild(node, i)
                 if (key > node.keys[i].first) i++
             }
-            insertNonfull(node.Nodes[i], key, value)
+            insertNonFull(node.Nodes[i], key, value)
         }
     }
 
@@ -128,8 +120,9 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
     private fun delete(key: K, node: BNode<K, V>? = root): Boolean {
         if (node == null) return false
         var size = node.keys.size
-        var i = 0
+        var i = 0//binSearch(key = key, array = node.keys)
         while (i < size && key > node.keys[i].first) i++
+
         when {
             i < node.keys.size && key == node.keys[i].first -> {
                 if (node.isLeaf) {
@@ -165,4 +158,27 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
         }
         return true
     }
+
+    internal fun binSearch(key: K, array: MutableList <Pair<K, V>>): Int {
+        if (array.size == 0) throw UnsupportedOperationException("Empty MutableList")
+        var middleIndex: Int
+        var firstIndex = -1
+        var lastIndex = array.size - 1
+        while (firstIndex != lastIndex) {
+            middleIndex = (firstIndex + lastIndex) / 2
+            if (key > array[middleIndex].first) firstIndex = middleIndex
+            else if (key < array[middleIndex].first) lastIndex = middleIndex
+            else {
+                firstIndex = middleIndex
+                break
+            }
+        }
+        when {
+            firstIndex>0 ->return firstIndex-1
+            else -> return firstIndex
+        }
+
+    }
+
+
 }
