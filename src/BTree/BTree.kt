@@ -177,8 +177,5 @@ class BTree<K : Comparable<K>, V>(private var root: BNode<K, V>? = null, val t: 
             firstIndex>0 ->return firstIndex-1
             else -> return firstIndex
         }
-
     }
-
-
 }
