@@ -172,6 +172,7 @@ internal class RbTreeTest {
     fun stressTest() {
         val Tree = RbTree<Int, Int>()
         for (i in 1..14000000 step 2) Tree.insert(i, i)
+        for (i in 14000000 downTo  1 step 3 ) Tree.delete(i)
+        assertEquals(true,Tree.isItRbTree())
     }
-
 }
